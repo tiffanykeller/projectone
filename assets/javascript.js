@@ -138,7 +138,6 @@ function initMap(){
         }
       ]
      }
-     
      markerArray = [
       {Markers:{
         coords: {lat:39.0995, lng: -94.5780},
@@ -228,9 +227,9 @@ function addMarker(props){
 
 // var form = document.getElementById('geo');
 // form.addEventListener('submit', geocoder);
-$("#geocodeButton").on('click', geocoder());
+$("#geocodeButton").on('click', geocoding());
 
-function geocoder() {
+function geocoding() {
   // prevent actual submit
   // e.preventDefault();
   let location = "1111 Main st Kansas City MO"
