@@ -152,7 +152,7 @@ function initMap(){
       {Markers:{
       coords: {lat:39.0998, lng: -94.5784},
       // iconImage:"",
-      content:'<h1>Criminal Activity3<h1>'
+      content:'<h3>Suspicious Activity3<h3>'
       }},
     ];
     //  New map
@@ -183,13 +183,11 @@ function initMap(){
       let lat = event.latLng.lat();
       let lng = event.latLng.lng();
       let coords = {lat:lat , lng: lng};
-
       let newMarker = {coords: coords,
         content: userMarkerMessage};
-
+        // adding markers to the database
       database.ref("/Markers").push({Markers: newMarker});  
     })
-  
   
     // adding all of our Markers to the map 
     for(let i = 0; i < markerArray.length ; i++){
@@ -209,7 +207,7 @@ function addMarker(props){
    // Checking for a custom icon
    if(props.Markers.iconImage){
      // Setting icon image
-     marker.setIcon(props.iconImage);
+     marker.setIcon(props.Markers.iconImage);
    }
    // Check if there is additional content
    if(props.Markers.content){
@@ -230,10 +228,10 @@ function addMarker(props){
 $("#geocodeButton").on('click', geocoding());
 
 function geocoding() {
-  // prevent actual submit
-  // e.preventDefault();
-  let location = "1111 Main st Kansas City MO"
-  // location = $("input").val().trim();
+//   prevent actual submit
+//   event.preventDefault();
+    //let location = "1111 Main st Kansas City MO"
+  let location = $("input").val().trim();
 
   console.log("Our geo search" + location)
   if (location === ""){
