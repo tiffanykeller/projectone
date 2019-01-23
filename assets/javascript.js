@@ -152,7 +152,7 @@ function initMap(){
       {Markers:{
       coords: {lat:39.0998, lng: -94.5784},
       // iconImage:"",
-      content:'<h3>Suspicious Activity3<h3>'
+      content:'<h3>Suspicious  Activity3<h3>'
       }},
     ];
     //  New map
@@ -225,13 +225,12 @@ function addMarker(props){
 
 // var form = document.getElementById('geo');
 // form.addEventListener('submit', geocoder);
-$("#geocodeButton").on('click', geocoding());
+$("#geocodeButton").on('click', function(event){
 
-function geocoding() {
-//   prevent actual submit
-//   event.preventDefault();
+//   prevent form submit
+  event.preventDefault();
     //let location = "1111 Main st Kansas City MO"
-  let location = $("input").val().trim();
+  var location = $("#inputAddress").val().trim();
 
   console.log("Our geo search" + location)
   if (location === ""){
@@ -258,8 +257,7 @@ function geocoding() {
    .catch(function(error){
      console.log(error);
    });
-};
-
+});
 
 
 
