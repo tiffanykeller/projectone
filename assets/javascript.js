@@ -1,6 +1,8 @@
-{/* <script>
 
+
+{/* <script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCV5fLzBC8q8GbS163UxAiHAZlcEHenxvI&callback=initMap"></script>
+</script> 
 </script> */}
 
 
@@ -41,12 +43,12 @@ $.ajax({
   alert("Retrieved " + data.length + " records from the dataset!");
   console.log(data);
   });
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
   var markerArray = [
     {
       coords: {lat:39.0995, lng: -94.5780},
@@ -65,8 +67,8 @@ $.ajax({
     },
   ];
   var map;
-  
-  
+
+
   function initMap() {
     // map options
      var options ={
@@ -154,15 +156,15 @@ $.ajax({
         }
       ]
      }
-     
+
     //  New map
      map = new 
-     google.maps.Map(document.getElementById('map'), options);
-  
+     google.maps.Map(document.getElementById('googleMap'), options);
+
      var infoWindow = new google.maps.InfoWindow({
       content:"<h1>Kansas City<h1>"
      })
-  
+
      // function that adds markers given coordinates, and iconImage
   function addMarker(props){
     var marker = new google.maps.Marker({
@@ -181,7 +183,7 @@ $.ajax({
          content: props.content
        });
        marker.addListener('click', function(){
-        infoWindow.open(map, marker);
+        infoWindow.open(googleMap, marker);
      })
     }
   }
@@ -189,4 +191,4 @@ $.ajax({
     for(let i = 0; i < markerArray.length; i++){
       addMarker(markerArray[i])
        };
-  }
+  } 
