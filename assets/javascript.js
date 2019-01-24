@@ -52,6 +52,7 @@ function reloadMarkers(){
 };
   
 function initMap(){
+
     // map options
      var options ={
       center: {lat: 39.0997, lng: -94.5786},
@@ -138,6 +139,7 @@ function initMap(){
         }
       ]
      }
+
      markerArray = [
       {Markers:{
         coords: {lat:39.0995, lng: -94.5780},
@@ -155,9 +157,11 @@ function initMap(){
       content:'<h3>Suspicious  Activity3<h3>'
       }},
     ];
+
     //  New map
      map = new 
      google.maps.Map(document.getElementById('googleMap'), options);
+
 
      var geocoder = new google.maps.Geocoder();
    
@@ -223,20 +227,20 @@ function addMarker(props){
 
 
 
-// var form = document.getElementById('geo');
+
 // form.addEventListener('submit', geocoder);
 $("#geocodeButton").on('click', function(event){
 
 //   prevent form submit
   event.preventDefault();
-    //let location = "1111 Main st Kansas City MO"
+    // To test our geocoder let location = "1111 Main st Kansas City MO"
   var location = $("#inputAddress").val().trim();
 
   console.log("Our geo search" + location)
   if (location === ""){
-    alert("didnt work");
-    return}
-  console.log("Our geo search" + location);
+    alert("Please input an address");
+    return};
+  
    axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
      params: {
        address: location, 
@@ -263,4 +267,5 @@ $("#geocodeButton").on('click', function(event){
 
 
 initMap();
+
 
