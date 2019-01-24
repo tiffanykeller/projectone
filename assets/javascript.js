@@ -1,79 +1,62 @@
 
 
-{/* <script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCV5fLzBC8q8GbS163UxAiHAZlcEHenxvI&callback=initMap"></script>
-</script> 
-</script> */}
-
-
-// Example data set retrieved from below ajax call
-// 0:
-// address: "3400  NORTON AV"
-// area: "EPD"
-// beat: "332"
-// city: "KANSAS CITY"
-// description: "Burglary - Residence"
-// dvflag: "U"
-// firearm_used_flag: "N"
-// from_date: "2018-09-02T00:00:00.000"
-// from_time: "18:15"
-// ibrs: "220"
-// invl_no: "1"
-// involvement: "VIC"
-// location_address: "3400 NORTON AV"
-// location_city: "KANSAS CITY"
-// location_zip: "64130"
-// offense: "501"
-// race: "U"
-// rep_dist: "PJ2783"
-// report_no: "180067842"
-// reported_date: "2018-09-02T00:00:00.000"
-// reported_time: "18:15"
-// sex: "U"
-// zip_code: "64130"
-
-$.ajax({
-    url: "https://data.kcmo.org/resource/nyg5-tzkz.json",
-    type: "GET",
-    data: {
-      "$limit" : 5000,
-      "$$app_token" : "j18RbeHRsp7j7iHr4KIskwzWP"
-    }
-  }).done(function(data) {
-  alert("Retrieved " + data.length + " records from the dataset!");
-  console.log(data);
-  });
-
-
-
-
-
-
-  var markerArray = [
-    {
-      coords: {lat:39.0995, lng: -94.5780},
-      // iconImage:'',
-      content:'<h1>Criminal Activity1<h1>'
-    },
-    {
-      coords: {lat:39.1000, lng: -94.5782},
-      // iconImage:'',
-      content:'<h1>Criminal Activity2<h1>'
-    },
-    {
-    coords: {lat:39.0998, lng: -94.5784},
-    // iconImage:"",
-    content:'<h1>Criminal Activity3<h1>'
-    },
-  ];
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyB6mZbWdxhmLw4fuxedbn_3P5z4k-IuSV0",
+    authDomain: "neighborhood-watch-4cada.firebaseapp.com",
+    databaseURL: "https://neighborhood-watch-4cada.firebaseio.com",
+    projectId: "neighborhood-watch-4cada",
+    storageBucket: "neighborhood-watch-4cada.appspot.com",
+    messagingSenderId: "674484382230"
+  };
+  firebase.initializeApp(config);
+  var database = firebase.database();
+  
+  var userName;
+  var zipCode;
+  var markerArray = [];
+  var oldMarkers= [];
   var map;
+  var infoWindow;
+ 
 
 
-  function initMap() {
+
+
+database.ref('/Markers').on("value", function(snapshot) {
+  
+  // Log everything that's coming out of snapshot
+  console.log(snapshot.val());
+  snapshot.forEach(function(childSnapshot){
+    let childData = childSnapshot.val();
+    console.log(childData);
+    markerArray.push(childData);
+  });
+     // adding all of our Markers to the map 
+
+      reloadMarkers();
+  // Handle the errors
+}, function(errorObject) {
+  console.log("Errors handled: " + errorObject.code);
+});
+
+
+function reloadMarkers(){
+  for (let h = 0; h < oldMarkers.length; h++){
+    oldMarkers[h].setMap(null);
+    }
+  oldMarkers = [];
+  for(let i = 0; i < markerArray.length ; i++){  
+    addMarker(markerArray[i])
+    }
+};
+  
+function initMap(){
+
     // map options
      var options ={
       center: {lat: 39.0997, lng: -94.5786},
-      zoom: 10,
+      zoom: 14,
       // Give the map a night style
       styles: [
         {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
@@ -157,38 +140,132 @@ $.ajax({
       ]
      }
 
+     markerArray = [
+      {Markers:{
+        coords: {lat:39.0995, lng: -94.5780},
+        // iconImage:'images/005-exit.png',
+        content:'<h3>Activity1<h3>'
+      }},
+      { Markers:{
+        coords: {lat:39.1000, lng: -94.5782},
+        // iconImage:'images/011-group.png',
+        content:'<h3>Criminal Activity2<h3>'
+      }},
+      {Markers:{
+      coords: {lat:39.0998, lng: -94.5784},
+      // iconImage:"",
+      content:'<h3>Suspicious  Activity3<h3>'
+      }},
+    ];
+
     //  New map
      map = new 
      google.maps.Map(document.getElementById('googleMap'), options);
 
-     var infoWindow = new google.maps.InfoWindow({
-      content:"<h1>Kansas City<h1>"
-     })
 
-     // function that adds markers given coordinates, and iconImage
-  function addMarker(props){
-    var marker = new google.maps.Marker({
-       position: props.coords,
-       map: map,
-      //  icon: props.iconImage
-     });
-     // Checking for a custom icon
-     if(props.iconImage){
-       // Setting icon image
-       marker.setIcon(props.iconImage);
-     }
-     // Check if there is additional content
-     if(props.content){
-       var infoWindow = new google.maps.InfoWindow({
-         content: props.content
-       });
-       marker.addListener('click', function(){
-        infoWindow.open(googleMap, marker);
-     })
-    }
-  }
-    // adding all of or Markers to the map 
-    for(let i = 0; i < markerArray.length; i++){
+     var geocoder = new google.maps.Geocoder();
+   
+
+    // listen for click on map
+    google.maps.event.addListener(map, 'click', 
+    function(event){
+      // geocoding the map click to return its zip code
+      geocoder.geocode({
+        'latLng': event.latLng
+      }, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          if (results[0]) {
+            console.log(results);
+            let zipCode = results[0].address_components[7].short_name;
+            console.log(zipCode);
+          }
+        }
+      });
+      console.log(zipCode);
+      // Getting the data to add our marker to the database
+      var userMarkerMessage = prompt("Leave a message with your marker here", "Fun party here!")
+      let lat = event.latLng.lat();
+      let lng = event.latLng.lng();
+      let coords = {lat:lat , lng: lng};
+      let newMarker = {coords: coords,
+        content: userMarkerMessage};
+        // adding markers to the database
+      database.ref("/Markers").push({Markers: newMarker});  
+    })
+  
+    // adding all of our Markers to the map 
+    for(let i = 0; i < markerArray.length ; i++){
       addMarker(markerArray[i])
        };
-  } 
+}
+
+ // function that adds markers given coordinates, and iconImage
+function addMarker(props){
+  var marker = new google.maps.Marker({
+     position: props.Markers.coords,
+     map: map,
+     draggable: true,
+     animation: google.maps.Animation.DROP,
+    //  icon: props.iconImage
+   });
+   // Checking for a custom icon
+   if(props.Markers.iconImage){
+     // Setting icon image
+     marker.setIcon(props.Markers.iconImage);
+   }
+   // Check if there is additional content
+   if(props.Markers.content){
+     var infoWindow = new google.maps.InfoWindow({
+       content: props.Markers.content
+     });
+     marker.addListener('click', function(){
+      infoWindow.open(map, marker);
+   })
+  }
+  oldMarkers.push(marker);
+};
+
+
+
+
+// form.addEventListener('submit', geocoder);
+$("#geocodeButton").on('click', function(event){
+
+//   prevent form submit
+  event.preventDefault();
+    // To test our geocoder let location = "1111 Main st Kansas City MO"
+  var location = $("#inputAddress").val().trim();
+
+  console.log("Our geo search" + location)
+  if (location === ""){
+    alert("Please input an address");
+    return};
+  
+   axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+     params: {
+       address: location, 
+       key:'AIzaSyCV5fLzBC8q8GbS163UxAiHAZlcEHenxvI'
+     }
+   })
+   .then(function(response){
+     console.log(response);
+     // Using our location data
+     zipCode = response.data.results[0].address_components[7].short_name
+     let lat = response.data.results[0].geometry.location.lat;
+     let lng = response.data.results[0].geometry.location.lng;
+     let coords = {lat: lat, lng: lng};
+     console.log(coords);
+     
+     map.setCenter(coords);
+   })
+   .catch(function(error){
+     console.log(error);
+   });
+});
+
+
+
+
+initMap();
+
+
